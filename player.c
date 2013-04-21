@@ -9,12 +9,12 @@
 
 void Player_Start(void) {
 	
-	gbmem_init();
+	gb_mem_init();
 	
 	
 	while(1) {
 		
-		cpu_execute_cycles(40);
+		gb_cpu_execute_cycles(40);
 		
 	}
 	

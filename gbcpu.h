@@ -10,9 +10,10 @@
 
 #include "gbtypes.h"
 
-void cpu_execute_cycles(int max_cycles);
-void init_cpu(void);
-void interupt_check(void);
-void call_opcode(uint8_t opcode, int *cycles_ptr);
+void gb_cpu_execute_cycles(int max_cycles);
+void gb_cpu_init(void);
+
+static void interupt_check(void);
+static void call_opcode(int *cycles_ptr);
 
 #endif /* GBCPU_H_ */

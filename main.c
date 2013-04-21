@@ -31,6 +31,7 @@
 
 #include "main.h"
 #include <stdint.h>
+#include "gbmem.h"
 
 #if !SHELLCFG_USES_MFS
 #error This application requires SHELLCFG_USES_MFS defined non-zero in user_config.h. Please recompile libraries with this option.
@@ -88,10 +89,8 @@ TASK_TEMPLATE_STRUCT MQX_template_list[] =
 
 void Main_task(uint_32 initial_data)
 {  
-    SplitRegister hello;
-    hello.full = 0x1234;
-    printf("High %x, Low %x", hello.split.high, hello.split.low);
-	
+    
+    
 	// Load file
 	
 	// Read header data
@@ -106,5 +105,12 @@ void Main_task(uint_32 initial_data)
    }
 
    
+}
+
+void Sd_Card_task(uint_32 initial_data) {
+	
+	
+	
+	
 }
 /* EOF */

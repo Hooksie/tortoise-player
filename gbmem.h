@@ -12,11 +12,45 @@
 
 #include "gbtypes.h"
 
-void gbmem_init(void);
-Byte read_gb_addre(Address addr);
+void gb_mem_init(void);
+Byte read_gb_addr(Address addr);
+void gb_write_addr(Address addr, Byte value);
+
+static Byte gb_read_rom(Address addr);
+static Byte gb_read_io(Address addr);
+static void gb_write_io(Address addr, Byte value);
+static Byte gb_read_vram(Address addr);
+static void gb_write_vram(Address addr, Byte value);
+static Byte gb_read_swram(Address addr);
+
+#define SIZE_ROM				0x4000
+#define SIZE_SWROM				0x4000
+#define SIZE_VRAM				0x2000
+#define SIZE_SWRAM				0x2000
+#define SIZE_IRAM				0x2000
+#define SIZE_ECHO				0x1E00
+#define SIZE_SPRITES			0x00A0
+#define SIZE_SBANK1				0x0060
+#define SIZE_IOPORTS			0x004C
+#define SIZE_SBANK2				0x0034
+#define SIZE_HIRAM				0x0080
+
+#define TOP_CART				0x8000
+#define TOP_VRAM				0xA000
+#define TOP_SWRAM				0xC000
+#define TOP_IRAM				0XE000
+#define TOP_ECHO				0xFE00
+#define TOP_SPRITE 				0xFEA0
+#define TOP_SBANK1				0xFF00
+#define TOP_IOPORTS				0xFF4C
+#define TOP_SBANK2				0xFF80
+#define TOP_HIRAM				0xFFFF
 
 #define SIZE_MEM_UPPER 			0x8000
 #define SIZE_MEM_IO 			0x0100
+
+#define OFFSET_ADDR_IO			0xFF00
+#define OFFSET_ADDR_UPPER		0x8000
 
 #define IO_ADDR_P1				0xFF00
 #define IO_ADDR_SB				0xFF01

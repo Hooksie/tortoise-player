@@ -3,6 +3,8 @@
  *
  *  Created on: Apr 20, 2013
  *      Author: Team Motivation
+ *      
+ *      This is mostly a BSD licensed file.
  */
 
 #include "gbcpu.h"
@@ -67,7 +69,7 @@ static inline void ret();
 
 CpuState cpu_int;
 
-void cpu_execute_cycles(int max_cycles) {
+void gb_cpu_execute_cycles(int max_cycles) {
 	
 	int cycles = 0;
 	int total_cycles = 0;
@@ -81,12 +83,14 @@ void cpu_execute_cycles(int max_cycles) {
 			// TODO: Um...?
 			
 		}
+		
+		call_opcode(&cycles);
 			
 	}
 	
 }
 
-void init_cpu() {
+void gb_cpu_init() {
 	
 	cpu_int.reg_af.full = 0x11B0;
 	cpu_int.reg_bc.full = 0x0013;
@@ -94,17 +98,19 @@ void init_cpu() {
 	cpu_int.reg_hl.full = 0x014D;
 	
 	cpu_int.reg_sp = 0xFFFE;
+	cpu_int.reg_pc = 0x0100;
+	
+}
+
+static void interupt_check() {
+	
 	
 	
 }
 
-void interupt_check() {
+static void call_opcode(int *cycles) {
 	
-	
-	
-}
-
-void call_opcode(uint8_t opcode, int *cycles) {
+	uint8_t opcode;
 	
 	switch (read_gb_addr(cpu_int.reg_pc++)) {
 		/* 8bit loads: imm -> reg */
@@ -1338,25 +1344,25 @@ void call_opcode(uint8_t opcode, int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x76:   // HALT
-			core.is_halted = 1;
+			cpu_int.halted = 1;
 			*cycles = 4;
 			break;
 		case 0x10:   // STOP
 			++cpu_int.reg_pc;		/* skip over the 0x00 */
 			/* has a speed switch been requested? */
-			if ((read_io(HWREG_KEY1) & 0x01) && 
-					(console_mode = MODE_GBC_ENABLED)) {
-			fprintf(stderr, "speed switch");
-				if (core.frequency == FREQ_NORMAL) {
-					core.frequency = FREQ_DOUBLE;
-					write_io(HWREG_KEY1, 0x80);
-				}
-				else if (core.frequency == FREQ_DOUBLE) {
-					core.frequency = FREQ_NORMAL;
-					write_io(HWREG_KEY1, 0x00);
-				}
-			} else
-				cpu_int.stopped = 1;
+//			if ((read_io(HWREG_KEY1) & 0x01) && 
+//					(console_mode = MODE_GBC_ENABLED)) {
+//			fprintf(stderr, "speed switch");
+//				if (core.frequency == FREQ_NORMAL) {
+//					core.frequency = FREQ_DOUBLE;
+//					write_io(HWREG_KEY1, 0x80);
+//				}
+//				else if (core.frequency == FREQ_DOUBLE) {
+//					core.frequency = FREQ_NORMAL;
+//					write_io(HWREG_KEY1, 0x00);
+//				}
+//			} else
+//				cpu_int.stopped = 1;
 			*cycles = 4;
 			break;
 		case 0xF3:	// DI
@@ -1364,7 +1370,7 @@ void call_opcode(uint8_t opcode, int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xFB:	// EI
-			core.ei = 3;
+			cpu_int.ei = 3;
 			//ime_ = 1;
 			*cycles = 4;
 			break;
@@ -1587,7 +1593,7 @@ void call_opcode(uint8_t opcode, int *cycles) {
 			break;
 		case 0xD9:	// RETI
 			ret();
-			core.ime = 1;
+			cpu_int.ime = 1;
 			*cycles = 16;
 			break;
 		case 0x00:  // NOP
@@ -1602,6 +1608,452 @@ void call_opcode(uint8_t opcode, int *cycles) {
 			break;
 	}
 	
-	
 }
 
+// ADD
+static inline Byte add_bbb(Byte a, Byte b) {
+	Byte temp = a + b;
+	// will it overflow? If so, set carry flag.
+	if (0xFF - a < b)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+	// will the lower nibble overflow? If so, set half carry flag.
+	if (0x0F - (a & 0x0F) < (b & 0x0F))
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	// if applicable, set zero flag. This is only changed in 8bit adds.
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 0.
+	FLAG_N = 0;
+	return temp;
+}
+
+static inline Word add_www(Word a, Word b) {
+	Word temp = a + b;
+	// will it overflow? If so, set carry flag.
+	if (0xFFFF - a < b)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+	// will the lower nibble overflow? If so, set half carry flag.
+	if (0x0FFF - (a & 0x0FFF) < (b & 0x0FFF))
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	// set subtract flag to 0.
+	FLAG_N = 0;
+	return temp;
+}
+
+static inline Word add_wwb(Word a, Byte b) {
+	// we must get the C compiler to sign extend b.
+	SWord bsx = (SWord)((SByte)b);
+	Word temp = a + (Word)bsx;
+	// will it overflow? If so, set carry flag.
+	if (0xFF - (a & 0x00ff) < b)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+	// will the lower nibble overflow? If so, set half carry flag.
+	if (0x0F - (a & 0x0F) < (b & 0x0F))
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	// set subtract flag to 0.
+	FLAG_N = 0;
+	FLAG_Z = 0;
+	return temp;
+}
+
+/* for this, we check for carry and half carry after each of the two add
+ * operations
+ */
+static inline Byte adc(Byte a, Byte b) {
+	Byte temp, temp2;
+	unsigned carry_set = 0;
+	unsigned half_set = 0;
+	
+	temp = a + FLAG_C;
+
+	// will the lower nibble overflow? If so, set half carry flag.
+	if (0x0F - (a & 0x0F) < (FLAG_C & 0x0F))
+		half_set = 1;
+	// will it overflow? If so, set carry flag.
+	if (0xFF - a < FLAG_C)
+		carry_set = 1;
+
+	temp2 = temp + b;
+	// will the lower nibble overflow? If so, set half carry flag.
+	if (0x0F - (temp & 0x0F) < (b & 0x0F))
+		half_set = 1;
+	// will it overflow? If so, set carry flag.
+	if (0xFF - temp < b)
+		carry_set = 1;	
+
+	if (half_set)
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+		
+	if (carry_set)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+		
+	// if applicable, set zero flag.
+	if (temp2 == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 0.
+	FLAG_N = 0;
+	return temp2;
+}
+
+
+static inline Byte sub(Byte a, Byte b) {
+	Byte temp;
+	// will there be a borrow? if so, no carry
+	if (a < b)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+	// will the lower nibble borrow? if so, no carry
+	if ((a & 0x0F) < (b & 0x0F))
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	temp = a - b;
+	// if applicable, set zero flag.
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 1.
+	FLAG_N = 1;
+	return temp;
+}
+
+static inline Byte sbc(Byte a, Byte b) {
+	Byte temp, temp2;
+	unsigned carry_set = 0;
+	unsigned half_set = 0;
+	
+	temp = a - FLAG_C;
+	
+	// will there be a borrow? if so, no carry
+	if (a < FLAG_C)
+		carry_set = 1;
+	// will the lower nibble borrow? if so, no carry
+	if ((a & 0x0F) < (FLAG_C & 0x0F))
+		half_set = 1;
+
+	temp2 = temp - b;
+	
+	// will there be a borrow? if so, no carry
+	if (temp < b)
+		carry_set = 1;
+	// will the lower nibble borrow? if so, no carry
+	if ((temp & 0x0F) < (b & 0x0F))
+		half_set = 1;
+
+	if (half_set)
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+		
+	if (carry_set)
+		FLAG_C = 1;
+	else
+		FLAG_C = 0;
+
+	// if applicable, set zero flag.
+	if (temp2 == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 1.
+	FLAG_N = 1;
+	return temp2;
+}
+
+static inline Byte inc_bb(Byte a) {
+	++a;
+	// has the lower nibble overflowed? If so, set half carry flag.
+	if ((a & 0x0F) == 0)
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	// if applicable, set zero flag.
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 0.
+	FLAG_N = 0;
+	return a;
+}
+
+
+static inline Word inc_ww(Word a) {
+	return ++a;
+}
+
+
+static inline Byte dec_bb(Byte a) {
+	--a;
+	// has the lower nibble borrowed? if so, no carry
+	if ((a & 0x0F) == 0x0F)
+		FLAG_H = 1;
+	else
+		FLAG_H = 0;
+	// if applicable, set zero flag.
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// set subtract flag to 1.
+	FLAG_N = 1;
+	return a;
+}
+
+
+static inline Word dec_ww(Word a) {
+	return --a;
+}
+
+// binary operations.
+
+static inline Byte and(Byte a, Byte b) {
+	Byte temp = a & b;
+	FLAG_N = 0;
+	FLAG_H = 1;
+	FLAG_C = 0;
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	return temp;	
+}
+
+static inline Byte or(Byte a, Byte b) {
+	Byte temp = a | b;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	FLAG_C = 0;
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	return temp;
+}
+
+
+static inline Byte xor(Byte a, Byte b) {
+	Byte temp = a ^ b;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	FLAG_C = 0;
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	return temp;
+}
+
+static inline Byte swap(Byte a) {
+		Byte temp;
+		temp = a & 0x0F;
+		a >>= 4;
+		a |= (temp << 4);
+
+		if (a == 0)
+			FLAG_Z = 1;
+		else
+			FLAG_Z = 0;
+		FLAG_N = 0;
+		FLAG_H = 0;
+		FLAG_C = 0;
+
+		// a = ((a & 0xF0) ^ (a & 0x0F)) & 0xF0;
+		// a = ((a & 0xF0) ^ (a & 0x0F)) & 0x0F;
+		// a = ((a & 0xF0) ^ (a & 0x0F)) & 0xF0;
+		return a;
+}
+
+static inline void push(Word a) {
+	REG_SP -= 2;
+	writew(REG_SP, a);
+	return;
+}
+
+static inline Word pop() {
+	REG_SP += 2;
+	return readw(REG_SP - 2);
+}
+
+static inline Byte daa(Byte a) {
+	unsigned int temp = a;
+	if (!FLAG_N) {
+		if (FLAG_H || ((temp & 0x0f) > 9))
+			temp += 6;
+		if (FLAG_C || (temp > 0x9f))
+			temp += 0x60;
+	} else {
+		if (FLAG_H)
+			temp = (temp - 6) & 0xff;
+		if (FLAG_C)
+			temp -= 0x60;
+	}
+
+	if (temp & 0x100)
+		FLAG_C = 1;
+
+	FLAG_H = 0;
+
+	temp &= 0xff;
+
+	if (temp == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	
+	return temp;
+}
+
+
+static inline Byte rlc(Byte a) {
+	FLAG_C = (a & 0x80) >> 7;
+	a = (a << 1) + FLAG_C;
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte rl(Byte a) {
+	int temp = FLAG_C;
+	FLAG_C = (a & 0x80) >> 7;
+	a = (a << 1) + temp;
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte rrc(Byte a) {
+	FLAG_C = a & 0x01;
+	a = (a >> 1) + (FLAG_C << 7);
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte rr(Byte a) {
+	int temp = FLAG_C;
+	FLAG_C = a & 0x01;
+	a = (a >> 1) + (temp << 7);
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte sla(Byte a) {
+	FLAG_C = (a & 0x80) >> 7;
+	a <<= 1;
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte sra(Byte a) {
+	FLAG_C = a & 0x01;
+	a >>= 1;
+	// We must preserve bit 7 in this instruction	
+	a |= ((a & 0x40) << 1);
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline Byte srl(Byte a) {
+	FLAG_C = a & 0x01;
+	a >>= 1;
+	if (a == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	FLAG_N = 0;
+	FLAG_H = 0;
+	return a;
+}
+
+static inline void bit(Byte a, Byte b) {
+	if ((a & (0x01 << b)) == 0)
+		FLAG_Z = 1;
+	else
+		FLAG_Z = 0;
+	// FLAG_Z = (~(a & (0x01 << b))) & 0x01;
+	FLAG_N = 0;
+	FLAG_H = 1;
+}
+
+static inline Byte set(Byte a, Byte b) {
+	return a |= (1 << b);
+}
+
+static inline Byte res(Byte a, Byte b) {
+	return a &= ~(1 << b);
+}
+
+static inline void jr(Byte a) {
+	// is a negative?
+	if ((a & 0x80) == 0x80) {
+		// remove two's complement
+		--a; a = ~a;
+		REG_PC -= a;
+	} else {
+		REG_PC += a;
+	}
+}
+
+static inline void call(Word a) {
+	push(REG_PC + 2);
+	REG_PC = readw(REG_PC);
+}
+
+static inline void rst(Byte a) {
+	push(REG_PC);
+	REG_PC = 0x0000 + a;
+}
+
+static inline void ret() {
+	REG_PC = pop();
+}

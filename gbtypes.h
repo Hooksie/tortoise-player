@@ -17,6 +17,10 @@
 typedef uint8_t	Byte;
 typedef uint16_t Word;
 typedef uint16_t Address;
+
+typedef int8_t SByte;
+typedef int16_t SWord;
+
 typedef uint16_t BasicRegister;
 typedef uint8_t Flag;
 
