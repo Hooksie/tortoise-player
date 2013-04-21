@@ -5,7 +5,7 @@
 #include <mfs.h>
 #include <sh_mfs.h>
 #include <shell.h>
-#include "gbtypes.h"
+#include "gb_arch/gbtypes.h"
 
 #define APPLICATION_HAS_SHELL
 #define MAIN_TASK   1

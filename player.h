@@ -8,7 +8,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "gbmem.h"
+#include "gb_arch/gbmem.h"
 
 void Player_Start(void);
 
