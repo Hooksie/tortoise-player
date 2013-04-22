@@ -11,10 +11,11 @@
 #define GBMEM_H_
 
 #include "gbtypes.h"
+#include "../gamefile.h"
 
 void gb_mem_init(void);
-Byte read_gb_addr(Address addr);
-void gb_write_addr(Address addr, Byte value);
+Byte gb_mem_read(Address addr);
+void gb_mem_write(Address addr, Byte value);
 
 static Byte gb_read_rom(Address addr);
 static Byte gb_read_io(Address addr);

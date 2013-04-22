@@ -112,30 +112,30 @@ static void call_opcode(int *cycles) {
 	
 	uint8_t opcode;
 	
-	switch (read_gb_addr(cpu_int.reg_pc++)) {
+	switch (gb_mem_read(cpu_int.reg_pc++)) {
 		/* 8bit loads: imm -> reg */
 		case 0x06:  /* LD B, n */
-			REG_B = read_gb_addr(cpu_int.reg_pc++);
+			REG_B = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x0E:  /* LD C, n */
-			REG_C = read_gb_addr(cpu_int.reg_pc++);
+			REG_C = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x16:  /* LD D, n */
-			REG_D = read_gb_addr(cpu_int.reg_pc++);
+			REG_D = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x1E:  /* LD E, n */
-			REG_E = read_gb_addr(cpu_int.reg_pc++);
+			REG_E = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x26:  /* LD H, n */
-			REG_H = read_gb_addr(cpu_int.reg_pc++);
+			REG_H = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x2E:  /* LD L, n */
-			REG_L = read_gb_addr(cpu_int.reg_pc++);
+			REG_L = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		/* 8bit loads: reg -> reg */
@@ -167,7 +167,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x7E:  /* LD A, (HL) */
-			REG_A = read_gb_addr(REG_HL);
+			REG_A = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		case 0x40:  /* LD B, B */
@@ -194,7 +194,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x46:  /* LD B, (HL) */
-			REG_B = read_gb_addr(REG_HL);
+			REG_B = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		case 0x48:  /* LD C, B */
@@ -221,7 +221,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x4E:  /* LD C, (HL) */
-			REG_C = read_gb_addr(REG_HL);
+			REG_C = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		case 0x50:  /* LD D, B */
@@ -248,7 +248,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x56:  /* LD D, (HL) */
-			REG_D = read_gb_addr(REG_HL);
+			REG_D = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		case 0x58:  /* LD E, B */
@@ -275,7 +275,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x5E:  /* LD E, (HL) */
-			REG_E = read_gb_addr(REG_HL);
+			REG_E = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		case 0x60:  /* LD H, B */
@@ -302,7 +302,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x66:  /* LD H, (HL) */
-			REG_H = read_gb_addr(REG_HL);
+			REG_H = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;			
 		case 0x68:  /* LD L, B */
@@ -329,53 +329,53 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x6E:  /* LD L, (HL) */
-			REG_L = read_gb_addr(REG_HL);
+			REG_L = gb_mem_read(REG_HL);
 			*cycles = 8;
 			break;
 		/* 8bit loads: reg -> (HL) */
 		case 0x70:  /* LD (HL), B */
-			writeb(REG_HL, REG_B);
+			gb_mem_write(REG_HL, REG_B);
 			*cycles = 8;
 			break;
 		case 0x71:  /* LD (HL), C */
-			writeb(REG_HL, REG_C);
+			gb_mem_write(REG_HL, REG_C);
 			*cycles = 8;
 			break;
 		case 0x72:  /* LD (HL), D */
-			writeb(REG_HL, REG_D);
+			gb_mem_write(REG_HL, REG_D);
 			*cycles = 8;
 			break;
 		case 0x73:  /* LD (HL), E */
-			writeb(REG_HL, REG_E);
+			gb_mem_write(REG_HL, REG_E);
 			*cycles = 8;
 			break;
 		case 0x74:  /* LD (HL), H */
-			writeb(REG_HL, REG_H);
+			gb_mem_write(REG_HL, REG_H);
 			*cycles = 8;
 			break;
 		case 0x75:  /* LD (HL), L */
-			writeb(REG_HL, REG_L);
+			gb_mem_write(REG_HL, REG_L);
 			*cycles = 8;
 			break;
 		case 0x36:  /* LD (HL), n */
-			writeb(REG_HL, read_gb_addr(cpu_int.reg_pc++));
+			gb_mem_write(REG_HL, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 12;
 			break;
 		case 0x0A:  /* LD A, (BC) */
-			REG_A = read_gb_addr(REG_BC);
+			REG_A = gb_mem_read(REG_BC);
 			*cycles = 8;
 			break;
 		case 0x1A:  /* LD A, (DE) */
-			REG_A = read_gb_addr(REG_DE);
+			REG_A = gb_mem_read(REG_DE);
 			*cycles = 8;
 			break;
 		case 0xFA:  /* LD A, (nn) */
-			REG_A = read_gb_addr(readw(cpu_int.reg_pc));
+			REG_A = gb_mem_read(gb_mem_wread(cpu_int.reg_pc));
 			cpu_int.reg_pc += 2;
 			*cycles = 16;
 			break;
 		case 0x3E:  /* LD A, n */
-			REG_A = read_gb_addr(cpu_int.reg_pc++);
+			REG_A = gb_mem_read(cpu_int.reg_pc++);
 			*cycles = 8;
 			break;
 		case 0x47:  /* LD B, A */
@@ -403,74 +403,74 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x02:  /* LD (BC), A */
-			writeb(REG_BC, REG_A);
+			gb_mem_write(REG_BC, REG_A);
 			*cycles = 8;
 			break;
 		case 0x12:  /* LD (DE), A */
-			writeb(REG_DE, REG_A);
+			gb_mem_write(REG_DE, REG_A);
 			*cycles = 8;
 			break;
 		case 0x77:  /* LD (HL), A */
-			writeb(REG_HL, REG_A);
+			gb_mem_write(REG_HL, REG_A);
 			*cycles = 8;
 			break;
 		case 0xEA:  /* LD (nn), A */
-			writeb(readw(cpu_int.reg_pc), REG_A);
+			gb_mem_write(gb_mem_wread(cpu_int.reg_pc), REG_A);
 			cpu_int.reg_pc += 2;
 			*cycles = 16;
 			break;
 		case 0xF2:  /* LD A, (C) */
-			REG_A = read_gb_addr(REG_C + 0xFF00);
+			REG_A = gb_mem_read(REG_C + 0xFF00);
 			*cycles = 8;
 			break;
 		case 0xE2:  /* LD (C), A */
-			writeb(REG_C + 0xFF00, REG_A);
+			gb_mem_write(REG_C + 0xFF00, REG_A);
 			*cycles = 8;
 			
 		break;
 		/* 8bit loads/dec/inc */
 		case 0x3A:  /* LDD A, (HL) */
-			REG_A = read_gb_addr(REG_HL--);
+			REG_A = gb_mem_read(REG_HL--);
 			*cycles = 8;
 			break;	
 		case 0x32:  /* LDD (HL), A */
-			writeb(REG_HL--, REG_A);
+			gb_mem_write(REG_HL--, REG_A);
 			*cycles = 8;
 			break;
 		case 0x2A:  /* LDI A, (HL) */
-			REG_A = read_gb_addr(REG_HL++);
+			REG_A = gb_mem_read(REG_HL++);
 			*cycles = 8;
 			break;
 		case 0x22:  /* LDI (HL), A */
-			writeb(REG_HL++, REG_A);
+			gb_mem_write(REG_HL++, REG_A);
 			*cycles = 8;
 			break;
 		case 0xE0:  /* LDH (n), A */
-			writeb(read_gb_addr(cpu_int.reg_pc++) + 0xFF00, REG_A);
+			gb_mem_write(gb_mem_read(cpu_int.reg_pc++) + 0xFF00, REG_A);
 			*cycles = 12;
 			break;
 		case 0xF0:  /* LDH A, (n) */
-			REG_A = read_gb_addr(0xFF00 + read_gb_addr(cpu_int.reg_pc++));
+			REG_A = gb_mem_read(0xFF00 + gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 12;
 			break;
 		/* 16bit loads */
 		case 0x01:  /* LD BC, nn */
-			REG_BC = readw(cpu_int.reg_pc);
+			REG_BC = gb_mem_wread(cpu_int.reg_pc);
 			cpu_int.reg_pc += 2;
 			*cycles = 12;
 			break;
 		case 0x11:  /* LD DE, nn */
-			REG_DE = readw(cpu_int.reg_pc);
+			REG_DE = gb_mem_wread(cpu_int.reg_pc);
 			cpu_int.reg_pc += 2;
 			*cycles = 12;
 			break;
 		case 0x21:  /* LD HL, nn */
-			REG_HL = readw(cpu_int.reg_pc);
+			REG_HL = gb_mem_wread(cpu_int.reg_pc);
 			cpu_int.reg_pc += 2;
 			*cycles = 12;
 			break;
 		case 0x31:  /* LD SP, nn */
-			REG_SP = readw(cpu_int.reg_pc);
+			REG_SP = gb_mem_wread(cpu_int.reg_pc);
 			cpu_int.reg_pc += 2;
 			*cycles = 12;
 			break;
@@ -479,11 +479,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 8;
 			break;
 		case 0xF8:  /* LDHL SP, n */
-			REG_HL = add_wwb(REG_SP, read_gb_addr(cpu_int.reg_pc++));
+			REG_HL = add_wwb(REG_SP, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 12;
 			break;
 		case 0x08: // LD (nn), SP
-			writew(readw(cpu_int.reg_pc), REG_SP);
+			gb_mem_wwrite(gb_mem_wread(cpu_int.reg_pc), REG_SP);
 			*cycles = 20;
 			cpu_int.reg_pc += 2;
 			break;
@@ -558,11 +558,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x86:	// ADD A, (HL)
-			REG_A = add_bbb(REG_A, read_gb_addr(REG_HL));
+			REG_A = add_bbb(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xC6:	// ADD A, n
-			REG_A = add_bbb(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = add_bbb(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0x8F:	// ADC A, A
@@ -594,11 +594,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x8E:	// ADC A, (HL)
-			REG_A = adc(REG_A, read_gb_addr(REG_HL));
+			REG_A = adc(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xCE:	// ADC A, n
-			REG_A = adc(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = adc(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0x97:	// SUB A, A
@@ -630,11 +630,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x96:	// SUB A, (HL)
-			REG_A = sub(REG_A, read_gb_addr(REG_HL));
+			REG_A = sub(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xD6:	// SUB A, n
-			REG_A = sub(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = sub(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0x9F:	// SBC A, A
@@ -666,11 +666,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x9E:	// SBC A, (HL)
-			REG_A = sbc(REG_A, read_gb_addr(REG_HL));
+			REG_A = sbc(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xDE:	// SBC A, n
-			REG_A = sbc(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = sbc(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0xA7:	// AND A
@@ -702,11 +702,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xA6:	// AND (HL)
-			REG_A = and(REG_A, read_gb_addr(REG_HL));
+			REG_A = and(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xE6:	// AND n
-			REG_A = and(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = and(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0xB7:	// OR A
@@ -738,11 +738,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xB6:	// OR (HL)
-			REG_A = or(REG_A, read_gb_addr(REG_HL));
+			REG_A = or(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xF6:	// OR n
-			REG_A = or(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = or(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0xAF:	// XOR A
@@ -774,11 +774,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xAE:	// XOR (HL)
-			REG_A = xor(REG_A, read_gb_addr(REG_HL));
+			REG_A = xor(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xEE:	// XOR n
-			REG_A = xor(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			REG_A = xor(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0xBF:	// CP A
@@ -810,11 +810,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xBE:	// CP (HL)
-			sub(REG_A, read_gb_addr(REG_HL));
+			sub(REG_A, gb_mem_read(REG_HL));
 			*cycles = 8;
 			break;
 		case 0xFE:	// CP n
-			sub(REG_A, read_gb_addr(cpu_int.reg_pc++));
+			sub(REG_A, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 8;
 			break;
 		case 0x3C:	// INC A
@@ -846,7 +846,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x34:	// INC (HL)
-			writeb(REG_HL, inc_bb(read_gb_addr(REG_HL)));
+			gb_mem_write(REG_HL, inc_bb(gb_mem_read(REG_HL)));
 			*cycles = 12;
 			break;
 		case 0x3D:	// DEC A
@@ -878,7 +878,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x35:	// DEC (HL)
-			writeb(REG_HL, dec_bb(read_gb_addr(REG_HL)));
+			gb_mem_write(REG_HL, dec_bb(gb_mem_read(REG_HL)));
 			*cycles = 12;
 			break;
 		case 0x09:	// ADD HL, BC
@@ -898,7 +898,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 8;
 			break;
 		case 0xE8:	// ADD SP, n
-			REG_SP = add_wwb(REG_SP, read_gb_addr(cpu_int.reg_pc++));
+			REG_SP = add_wwb(REG_SP, gb_mem_read(cpu_int.reg_pc++));
 			*cycles = 16;
 			break;
 		case 0x03:	// INC BC
@@ -934,7 +934,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 8;
 			break;
 		case 0xCB:	// Some two byte opcodes here.
-			switch (read_gb_addr(cpu_int.reg_pc++)) {
+			switch (gb_mem_read(cpu_int.reg_pc++)) {
 				case 0x37:	// SWAP A
 					REG_A = swap(REG_A);
 					*cycles = 8;
@@ -964,7 +964,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x36:	// SWAP (HL)
-					writeb(REG_HL, swap(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, swap(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x07:	// RLC A
@@ -996,7 +996,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x06:	// RLC (HL)
-					writeb(REG_HL, rlc(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, rlc(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x17:	// RL A
@@ -1028,7 +1028,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x16:	// RL (HL)
-					writeb(REG_HL, rl(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, rl(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x0F:	// RRC A
@@ -1060,7 +1060,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x0E:	// RRC (HL)
-					writeb(REG_HL, rrc(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, rrc(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x1F:	// RR A
@@ -1092,7 +1092,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x1E:	// RR (HL)
-					writeb(REG_HL, rr(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, rr(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x27:	// SLA A
@@ -1124,7 +1124,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x26:	// SLA (HL)
-					writeb(REG_HL, sla(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, sla(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x2F:	// SRA A
@@ -1156,7 +1156,7 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x2E:	// SRA (HL)
-					writeb(REG_HL, sra(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, sra(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				case 0x3F:	// SRL A
@@ -1188,11 +1188,11 @@ static void call_opcode(int *cycles) {
 					*cycles = 8;
 					break;
 				case 0x3E:	// SRL (HL)
-					writeb(REG_HL, srl(read_gb_addr(REG_HL)));
+					gb_mem_write(REG_HL, srl(gb_mem_read(REG_HL)));
 					*cycles = 16;
 					break;
 				default:
-					opcode = read_gb_addr(cpu_int.reg_pc - 1);
+					opcode = gb_mem_read(cpu_int.reg_pc - 1);
 					// Is this a BIT instruction?
 					if ((opcode & 0xC0) == 0x40) {
 						Byte b = (opcode & 0x38) >> 3;
@@ -1222,7 +1222,7 @@ static void call_opcode(int *cycles) {
 								*cycles = 8;
 								break;
 							case 0x06:	// BIT b, (HL)
-								bit(read_gb_addr(REG_HL), b);
+								bit(gb_mem_read(REG_HL), b);
 								*cycles = 12;
 								break;
 							case 0x07:	// BIT b, A
@@ -1261,8 +1261,8 @@ static void call_opcode(int *cycles) {
 								*cycles = 8;
 								break;
 							case 0x06:	// SET b, (HL)
-								writeb(REG_HL, 
-										   set(read_gb_addr(REG_HL), b));
+								gb_mem_write(REG_HL, 
+										   set(gb_mem_read(REG_HL), b));
 								*cycles = 16;
 								break;
 							case 0x07:	// SET b, A
@@ -1301,8 +1301,8 @@ static void call_opcode(int *cycles) {
 								*cycles = 8;
 								break;
 							case 0x06:	// SET b, HL
-								writeb(REG_HL, 
-										   res(read_gb_addr(REG_HL), b));
+								gb_mem_write(REG_HL, 
+										   res(gb_mem_read(REG_HL), b));
 								*cycles = 16;
 								break;
 							case 0x07:
@@ -1312,9 +1312,9 @@ static void call_opcode(int *cycles) {
 						}
 					break;
 					}
-					printf("invalid opcode: cb%hhx ", read_gb_addr(cpu_int.reg_pc - 1));
+					printf("invalid opcode: cb%hhx ", gb_mem_read(cpu_int.reg_pc - 1));
 					printf("at %hx\n", cpu_int.reg_pc - 2);
-					dump_state();
+					//dump_state();
 			}
 			break;
 	
@@ -1395,12 +1395,12 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xC3:   // JP imm
-			cpu_int.reg_pc = readw(cpu_int.reg_pc);
+			cpu_int.reg_pc = gb_mem_wread(cpu_int.reg_pc);
 			*cycles = 16;
 			break;
 		case 0xC2: 	// JP NZ, nn
 			if (FLAG_Z == 0) {
-				cpu_int.reg_pc = readw(cpu_int.reg_pc);
+				cpu_int.reg_pc = gb_mem_wread(cpu_int.reg_pc);
 				*cycles = 16;
 				break;
 			}
@@ -1409,7 +1409,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xCA: 	// JP Z, nn
 			if (FLAG_Z != 0) {
-				cpu_int.reg_pc = readw(cpu_int.reg_pc);
+				cpu_int.reg_pc = gb_mem_wread(cpu_int.reg_pc);
 				*cycles = 16;
 				break;
 			}
@@ -1418,7 +1418,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xD2: 	// JP NC, nn
 			if (FLAG_C == 0) {
-				cpu_int.reg_pc = readw(cpu_int.reg_pc);
+				cpu_int.reg_pc = gb_mem_wread(cpu_int.reg_pc);
 				*cycles = 16;
 				break;
 			}
@@ -1427,7 +1427,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xDA: 	// JP C, nn
 			if (FLAG_C != 0) {
-				cpu_int.reg_pc = readw(cpu_int.reg_pc);
+				cpu_int.reg_pc = gb_mem_wread(cpu_int.reg_pc);
 				*cycles = 16;
 				break;
 			}
@@ -1439,13 +1439,13 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x18:   // JR n
-			jr(read_gb_addr(cpu_int.reg_pc));
+			jr(gb_mem_read(cpu_int.reg_pc));
 			cpu_int.reg_pc += 1;
 			*cycles = 12;
 			break;
 		case 0x20:   // JR NZ, n
 			if (FLAG_Z == 0) {
-				jr(read_gb_addr(cpu_int.reg_pc));
+				jr(gb_mem_read(cpu_int.reg_pc));
 				++cpu_int.reg_pc;
 				*cycles = 12;
 				break;
@@ -1455,7 +1455,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0x28:   // JR Z, n
 			if (FLAG_Z != 0) {
-				jr(read_gb_addr(cpu_int.reg_pc));
+				jr(gb_mem_read(cpu_int.reg_pc));
 				++cpu_int.reg_pc;
 				*cycles = 12;
 				break;
@@ -1465,7 +1465,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0x30:   // JR NC, n
 			if (FLAG_C == 0) {
-				jr(read_gb_addr(cpu_int.reg_pc));
+				jr(gb_mem_read(cpu_int.reg_pc));
 				++cpu_int.reg_pc;
 				*cycles = 12;
 				break;
@@ -1475,7 +1475,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0x38:   // JR C, n
 			if (FLAG_C != 0) {
-				jr(read_gb_addr(cpu_int.reg_pc));
+				jr(gb_mem_read(cpu_int.reg_pc));
 				++cpu_int.reg_pc;
 				*cycles = 12;
 				break;
@@ -1484,12 +1484,12 @@ static void call_opcode(int *cycles) {
 			*cycles = 8;
 			break;
 		case 0xCD:	// CALL nn
-			call(readw(cpu_int.reg_pc));
+			call(gb_mem_wread(cpu_int.reg_pc));
 			*cycles = 24;
 			break;
 		case 0xC4:	// CALL NZ, nn
 			if (FLAG_Z == 0) {
-				call(readw(cpu_int.reg_pc));
+				call(gb_mem_wread(cpu_int.reg_pc));
 				*cycles = 24;
 				break;
 			}
@@ -1498,7 +1498,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xCC:	// CALL Z, nn
 			if (FLAG_Z != 0) {
-				call(readw(cpu_int.reg_pc));
+				call(gb_mem_wread(cpu_int.reg_pc));
 				*cycles = 24;
 				break;
 			}
@@ -1507,7 +1507,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xD4:	// CALL NC, nn
 			if (FLAG_C == 0) {
-				call(readw(cpu_int.reg_pc));
+				call(gb_mem_wread(cpu_int.reg_pc));
 				*cycles = 24;
 				break;
 			}
@@ -1516,7 +1516,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xDC:	// CALL C, nn
 			if (FLAG_C != 0) {
-				call(readw(cpu_int.reg_pc));
+				call(gb_mem_wread(cpu_int.reg_pc));
 				*cycles = 24;
 				break;
 			}
@@ -1603,7 +1603,7 @@ static void call_opcode(int *cycles) {
 			getchar();
 			break;
 		default:
-			printf("invalid opcode: %hhx ", read_gb_addr(cpu_int.reg_pc - 1));
+			printf("invalid opcode: %hhx ", gb_mem_read(cpu_int.reg_pc - 1));
 			printf("at %hx\n", cpu_int.reg_pc - 1);
 			break;
 	}
@@ -1888,13 +1888,13 @@ static inline Byte swap(Byte a) {
 
 static inline void push(Word a) {
 	REG_SP -= 2;
-	writew(REG_SP, a);
+	gb_mem_wwrite(REG_SP, a);
 	return;
 }
 
 static inline Word pop() {
 	REG_SP += 2;
-	return readw(REG_SP - 2);
+	return gb_mem_wread(REG_SP - 2);
 }
 
 static inline Byte daa(Byte a) {
@@ -2046,7 +2046,7 @@ static inline void jr(Byte a) {
 
 static inline void call(Word a) {
 	push(REG_PC + 2);
-	REG_PC = readw(REG_PC);
+	REG_PC = gb_mem_wread(REG_PC);
 }
 
 static inline void rst(Byte a) {

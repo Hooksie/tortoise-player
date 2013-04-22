@@ -9,6 +9,7 @@
 #define GBCPU_H_
 
 #include "gbtypes.h"
+#include "gbmem.h"
 
 void gb_cpu_execute_cycles(int max_cycles);
 void gb_cpu_init(void);
