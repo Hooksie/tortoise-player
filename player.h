@@ -8,7 +8,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "gamefile.h"
+#include "gb_arch/gamefile.h"
 #include "gb_arch/gbmem.h"
 
 extern int_32 Player_Start(int_32 argc, char_ptr argv[]);

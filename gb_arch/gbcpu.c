@@ -85,7 +85,8 @@ void gb_cpu_execute_cycles(int max_cycles) {
 		}
 		
 		call_opcode(&cycles);
-			
+		
+		total_cycles += cycles;
 	}
 	
 }

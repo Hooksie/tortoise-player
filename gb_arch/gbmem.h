@@ -11,7 +11,7 @@
 #define GBMEM_H_
 
 #include "gbtypes.h"
-#include "../gamefile.h"
+#include "gamefile.h"
 
 void gb_mem_init(void);
 Byte gb_mem_read(Address addr);

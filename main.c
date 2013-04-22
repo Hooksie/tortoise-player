@@ -28,7 +28,6 @@
 *END************************************************************************/
 
 #include "main.h"
-#include "gamefile.h"
 
 #include <mqx.h>
 #include <bsp.h>

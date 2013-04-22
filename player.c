@@ -21,7 +21,7 @@ extern int_32 Player_Start(int_32 argc, char_ptr argv[] ) {
 	while(1) {
 		
 		gb_cpu_execute_cycles(40);
-		
+		printf("Execute! Cycles!  Fuck!\n");
 	}
 	
 	return 0;

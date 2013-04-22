@@ -9,7 +9,7 @@
 #define GAMEFILE_H_
 
 #include <mfs.h>
-#include "gb_arch/gbtypes.h"
+#include "gbtypes.h"
 
 void gb_game_load(char path[]);
 void gb_game_unload(void);
