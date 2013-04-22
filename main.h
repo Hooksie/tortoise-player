@@ -1,10 +1,13 @@
 #ifndef __main_h_
 #define __main_h_
+
 #include <mqx.h>
 #include <bsp.h>
 #include <mfs.h>
 #include <sh_mfs.h>
 #include <shell.h>
+
+#include "player.h"
 #include "gb_arch/gbtypes.h"
 
 #define APPLICATION_HAS_SHELL
