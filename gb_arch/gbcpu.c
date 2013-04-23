@@ -74,7 +74,7 @@ void gb_cpu_execute_cycles(int max_cycles) {
 	int cycles = 0;
 	int total_cycles = 0;
 	
-	while(total_cycles < max_cycles) {
+	//while(total_cycles < max_cycles) {
 		
 		interupt_check();
 		
@@ -84,11 +84,18 @@ void gb_cpu_execute_cycles(int max_cycles) {
 			
 		}
 		
-		printf("@REG_PC: %x   %x\n", REG_PC, gb_mem_read(REG_PC));
+		printf("@REG_PC: %x\n", REG_PC);
+		printf("@REG_SP: %x\n", REG_SP);
+		printf("@REG_AF: %x\n", REG_AF);
+		printf("@REG_BC: %x\n", REG_BC);
+		printf("@REG_DE: %x\n", REG_DE);
+		printf("@REG_HL: %x\n", REG_HL);
+		
 		call_opcode(&cycles);
 		
 		total_cycles += cycles;
-	}
+		
+	//}
 	
 }
 
@@ -101,6 +108,8 @@ void gb_cpu_init() {
 	
 	REG_SP = 0xFFFE;
 	REG_PC = 0x0100;
+	
+	printf("CPI initialized...\n");
 	
 }
 

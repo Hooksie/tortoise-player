@@ -26,6 +26,17 @@ void gb_game_unload() {
 	
 }
 
+void gb_game_init() {
+	
+	gb_game_anal();
+	gb_game_findname();
+	gb_game_doromsizing();
+	gb_game_doramsizing();
+	
+	printf("Game initialized...\n");
+	
+}
+
 Byte gb_game_addr(Address addr) {
 	
 	char cart_data[1];
@@ -62,7 +73,7 @@ void gb_game_findname() {
 
 void gb_game_docartyping() {
 	
-	
+	// I know what zelda is.  Leave me alone.
 	
 }
 
@@ -76,7 +87,7 @@ void gb_game_doromsizing() {
 			break;
 			
 		default:
-			fprint("Unsupported ROM!  Fuck off!");
+			printf("Unsupported ROM!  Fuck off!");
 			break;
 	
 	}
@@ -93,10 +104,15 @@ void gb_game_doramsizing() {
 			break;
 			
 		default:
-			fprint("Unsupported RAM!  Fuck off!");
+			printf("Unsupported RAM!  Fuck off!");
 			break;
 	
 	}
 	
 }
 
+uint32_t gb_game_ramsize() {
+	
+	return ram_size;
+	
+}

@@ -14,14 +14,20 @@
 #include "gamefile.h"
 
 void gb_mem_init(void);
-Byte gb_mem_read(Address addr);
-void gb_mem_write(Address addr, Byte value);
 
+void gb_mem_write(Address addr, Byte value);
+Byte gb_mem_read(Address addr);
+
+static void gb_write_rom(Address addr, Byte value);
 static Byte gb_read_rom(Address addr);
-static Byte gb_read_io(Address addr);
+
 static void gb_write_io(Address addr, Byte value);
-static Byte gb_read_vram(Address addr);
+static Byte gb_read_io(Address addr);
+
 static void gb_write_vram(Address addr, Byte value);
+static Byte gb_read_vram(Address addr);
+
+static void gb_write_swram(Address addr, Byte value);
 static Byte gb_read_swram(Address addr);
 
 #define SIZE_ROM				0x4000

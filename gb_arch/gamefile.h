@@ -13,8 +13,16 @@
 #include "gbtypes.h"
 #include "gbmem.h"
 
+
 void gb_game_load(char path[]);
 void gb_game_unload(void);
+void gb_game_init(void);
 Byte gb_game_addr(Address addr);
+void gb_game_anal(void);
+void gb_game_findname(void);
+void gb_game_docartyping(void);
+void gb_game_doromsizing(void);
+void gb_game_doramsizing(void);
+uint32_t gb_game_ramsize();
 
 #endif /* GAMEFILE_H_ */

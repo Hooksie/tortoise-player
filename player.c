@@ -10,10 +10,9 @@
 extern int_32 Player_Start(int_32 argc, char_ptr argv[] ) {
 	
 	gb_game_load(argv[1]);
-	gb_mem_init();
 	gb_cpu_init();
-	gb_game_anal();
-	gb_game_findname();
+	gb_game_init();
+	gb_mem_init();
 	
 //	printf("Check this shit -> %x\n", gb_game_addr(0x00));
 //	printf("Check this shit -> %x\n", gb_game_addr(0x02));

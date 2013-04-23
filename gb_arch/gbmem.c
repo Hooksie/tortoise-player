@@ -9,13 +9,17 @@
 
 #include "gbmem.h"
 
+uint16_t selected_rom_bank, selected_ram_bank;
 extern Byte *upper_addrs = NULL;
 extern Byte *io_addrs = NULL;
-uint16_t selected_rom_bank, selected_ram_bank;
+extern Byte *ram_addrs = NULL;
 
 void gb_mem_init(void) {
 	
-	selected_bank = 0;
+	uint32_t ramsize;
+	ramsize = gb_game_ramsize();
+	selected_rom_bank = 0;
+	selected_ram_bank = 0;
 	
 	if(!upper_addrs)
 		upper_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_UPPER);
@@ -23,7 +27,15 @@ void gb_mem_init(void) {
 	if(!io_addrs)
 		io_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_IO);
 	
-	memset(upper_addrs, 0, SIZE_MEM_UPPER);
+	
+	if(!io_addrs) {
+		ram_addrs = (Byte*) malloc(sizeof(Byte) * ramsize);
+		printf("ramsize is %i bytes", ramsize);
+	}
+	
+	
+	//memset(upper_addrs, 0, SIZE_MEM_UPPER);
+	//memset(ram_addrs, 0, sizeof(Byte) * sizeof(ram_addrs0);
 	
 	gb_mem_write(IO_ADDR_TIMA, 0x00);
 	gb_mem_write(IO_ADDR_TMA, 0x00);
@@ -56,6 +68,8 @@ void gb_mem_init(void) {
 	gb_mem_write(IO_ADDR_WY, 0x00);
 	gb_mem_write(IO_ADDR_WX, 0x00);
 	gb_mem_write(IO_ADDR_IE, 0x00);
+	
+	printf("Memory initialized...\n");
 	
 }
 
@@ -92,7 +106,7 @@ void gb_mem_write(Address addr, Byte value) {
 		upper_addrs[addr - OFFSET_ADDR_UPPER] = value;
 		
 	} else if(addr < TOP_SWRAM) {
-		gb_write_swram(addr);
+		gb_write_swram(addr, value);
 		
 	} else if(addr < TOP_IRAM) {
 		upper_addrs[addr - OFFSET_ADDR_UPPER] = value;
@@ -155,7 +169,7 @@ void gb_write_rom(Address addr, Byte value) {
 		selected_ram_bank = value & 0x0F;
 		
 	} else {
-		fprint("RomWrite: Well shit, that's not a valid ROM cart address.");
+		printf("RomWrite: Well shit, that's not a valid ROM cart address.");
 		
 	}
 	
@@ -173,8 +187,14 @@ Byte gb_read_swrom(Address addr) {
 	
 }
 
+void gb_write_swram(Address addr, Byte value) {
+	
+	ram_addrs[addr + (SIZE_SWRAM * selected_ram_bank)] = value;
+	
+}
+
 Byte gb_read_swram(Address addr) {
 	
-	return gm_ram_addr();
+	return ram_addrs[addr + (SIZE_SWRAM * selected_ram_bank)];
 	
 }
