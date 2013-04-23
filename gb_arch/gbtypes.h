@@ -41,4 +41,6 @@ typedef struct CpuState {
 	int ei, ime;
 } CpuState;
 
+typedef enum { ROM_ONLY, MBC1, MBC2, MBC3, MC5, RUMBLE, HuC1 } CartType; 
+
 #endif /* GBTYPES_H_ */

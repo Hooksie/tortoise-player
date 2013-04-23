@@ -112,6 +112,7 @@ const SHELL_COMMAND_STRUCT Shell_commands[] = {
     { "write",     Shell_write },
     { "?",         Shell_command_list },
     { "player",	   Player_Start },
+   // { "catbug",	   Catbug},
     { NULL,        NULL }
 };
 

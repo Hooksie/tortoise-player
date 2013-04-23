@@ -53,6 +53,16 @@ static Byte gb_read_swram(Address addr);
 #define OFFSET_ADDR_IO			0xFF00
 #define OFFSET_ADDR_UPPER		0x8000
 
+#define INDIC_TITLE				0x0134
+#define INDIC_CARTYPE			0x0147
+#define INDIC_ROM				0x0148
+#define INDIC_RAM				0x0149
+
+#define INROM_DENI				0x2000
+#define INROM_ROM_SELLOW		0x3000
+#define INROM_ROM_SELHI			0x4000
+#define INROM_RAM_SEL			0x6000
+
 #define IO_ADDR_P1				0xFF00
 #define IO_ADDR_SB				0xFF01
 #define IO_ADDR_SC				0xFF02

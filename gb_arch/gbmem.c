@@ -11,8 +11,11 @@
 
 extern Byte *upper_addrs = NULL;
 extern Byte *io_addrs = NULL;
+uint16_t selected_rom_bank, selected_ram_bank;
 
 void gb_mem_init(void) {
+	
+	selected_bank = 0;
 	
 	if(!upper_addrs)
 		upper_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_UPPER);
@@ -64,7 +67,6 @@ Byte gb_mem_read(Address addr) {
 		value = gb_read_rom(addr);
 		
 	} else if(addr < TOP_VRAM) {
-		//value = gb_read_vram(addr);
 		value = upper_addrs[addr - OFFSET_ADDR_UPPER];
 		
 	} else if(addr < TOP_SWRAM) {
@@ -84,12 +86,13 @@ Byte gb_mem_read(Address addr) {
 void gb_mem_write(Address addr, Byte value) {
 	
 	if(addr < TOP_CART) {
+		gb_write_rom(addr, value);
 		
 	} else if(addr < TOP_VRAM) {
 		upper_addrs[addr - OFFSET_ADDR_UPPER] = value;
 		
 	} else if(addr < TOP_SWRAM) {
-		value = gb_read_swram(addr);
+		gb_write_swram(addr);
 		
 	} else if(addr < TOP_IRAM) {
 		upper_addrs[addr - OFFSET_ADDR_UPPER] = value;
@@ -134,24 +137,44 @@ void gb_mem_wwrite(Address addr, Word value) {
 	
 }
 
-Byte gb_read_rom(Address addr) {
+void gb_write_rom(Address addr, Byte value) {
 	
-	Byte value;
-	
-	if(addr < SIZE_ROM) {
+	if(addr < INROM_DENI) {
+		// SCREW YOURSELF
+	} else if(addr < INROM_ROM_SELLOW) {
+		selected_rom_bank = (selected_rom_bank & (~0xFF)) | value;
+		//if(selected_rom_bank == 0)
+			//selected_rom_bank = 1;
+		
+	} else if(addr < INROM_ROM_SELHI) {
+		selected_rom_bank = (selected_rom_bank && 0xFF) | ((value & 0x01) << 8);
+		//if(selected_rom_bank == 0)
+			//selected_rom_bank = 1;
+		
+	} else if(addr < INROM_RAM_SEL) {
+		selected_ram_bank = value & 0x0F;
 		
 	} else {
+		fprint("RomWrite: Well shit, that's not a valid ROM cart address.");
 		
 	}
 	
+}
+
+Byte gb_read_rom(Address addr) {
+
+	return gb_game_addr(addr);;
 	
-	return gb_game_addr(addr);
+}
+
+Byte gb_read_swrom(Address addr) {
+	
+	return gm_game_addr(addr + (SIZE_ROM * selected_rom_bank));;
 	
 }
 
 Byte gb_read_swram(Address addr) {
 	
-	Byte value;
-	return value;
+	return gm_ram_addr();
 	
 }

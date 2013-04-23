@@ -9,7 +9,9 @@
 #define GAMEFILE_H_
 
 #include <mfs.h>
+#include <stdlib.h>
 #include "gbtypes.h"
+#include "gbmem.h"
 
 void gb_game_load(char path[]);
 void gb_game_unload(void);
