@@ -67,7 +67,9 @@ static inline void call(Word a);
 static inline void rst(Byte a);
 static inline void ret();
 
-CpuState cpu;
+CpuState cpu_int;
+ConsoleTypes console;
+ConsoleModes console_mode;
 
 void gb_cpu_execute_cycles(int max_cycles) {
 	
@@ -78,7 +80,7 @@ void gb_cpu_execute_cycles(int max_cycles) {
 		
 		interupt_check();
 		
-		if(cpu.halted) {
+		if(cpu_int.halted) {
 			
 			// TODO: Um...?
 			
@@ -101,12 +103,16 @@ void gb_cpu_execute_cycles(int max_cycles) {
 
 void gb_cpu_init() {
 	
+	console = CONSOLE_GBC;
+	console_mode = MODE_GBC_ENABLED;
+	
 	FLAG_Z = 1;
 	FLAG_N = 0;
 	FLAG_Z = 1;
 	FLAG_C = 1;
 	
-	cpu.halted;
+	cpu_int.halted = 0;
+	cpu_int.stopped = 0;
 
 	// As defined in spec
 //	REG_AF = 0x11B0;
@@ -118,7 +124,7 @@ void gb_cpu_init() {
 	REG_AF = 0x1180;
 	REG_BC = 0x0000;
 	REG_DE = 0xFF56;
-	REG_HL = 0x014D;
+	REG_HL = 0x000D;
 
 	REG_SP = 0xFFFE;
 	REG_PC = 0x0100;
@@ -1369,33 +1375,32 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x76:   // HALT
-			cpu.halted = 1;
+			cpu_int.halted = 1;
 			*cycles = 4;
 			break;
 		case 0x10:   // STOP
 			++REG_PC;		/* skip over the 0x00 */
 			/* has a speed switch been requested? */
-//			if ((read_io(HWREG_KEY1) & 0x01) && 
-//					(console_mode = MODE_GBC_ENABLED)) {
-//			fprintf(stderr, "speed switch");
-//				if (core.frequency == FREQ_NORMAL) {
-//					core.frequency = FREQ_DOUBLE;
-//					write_io(HWREG_KEY1, 0x80);
-//				}
-//				else if (core.frequency == FREQ_DOUBLE) {
-//					core.frequency = FREQ_NORMAL;
-//					write_io(HWREG_KEY1, 0x00);
-//				}
-//			} else
-//				cpu_int.stopped = 1;
+			if ((gb_mem_read(IO_ADDR_KEY1) & 0x01) && (console_mode == MODE_GBC_ENABLED)) {
+				printf("speed switch");
+				if (cpu_int.frequency == FREQ_NORMAL) {
+					cpu_int.frequency = FREQ_DOUBLE;
+					gb_mem_write(IO_ADDR_KEY1, 0x80);
+				}
+				else if (cpu_int.frequency == FREQ_DOUBLE) {
+					 cpu_int.frequency = FREQ_NORMAL;
+					 gb_mem_write(IO_ADDR_KEY1, 0x00);
+				}
+			} else
+				cpu_int.stopped = 1;
 			*cycles = 4;
 			break;
 		case 0xF3:	// DI
-			cpu.ime = 0;
+			cpu_int.ime = 0;
 			*cycles = 4;
 			break;
 		case 0xFB:	// EI
-			cpu.ei = 3;
+			cpu_int.ei = 3;
 			//ime_ = 1;
 			*cycles = 4;
 			break;
@@ -1618,7 +1623,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xD9:	// RETI
 			ret();
-			cpu.ime = 1;
+			cpu_int.ime = 1;
 			*cycles = 16;
 			break;
 		case 0x00:  // NOP
