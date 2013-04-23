@@ -18,15 +18,17 @@ void gb_mem_init(void) {
 	
 	uint32_t ramsize;
 	ramsize = gb_game_ramsize();
-	selected_rom_bank = 0;
+	selected_rom_bank = 1;
 	selected_ram_bank = 0;
 	
-	if(!upper_addrs)
+	if(upper_addrs) {
 		upper_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_UPPER);
+		printf("upper size is %x", SIZE_MEM_UPPER);
+	}
 	
-	if(!io_addrs)
+	if(io_addrs) {
 		io_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_IO);
-	
+	}
 	
 	if(!io_addrs) {
 		ram_addrs = (Byte*) malloc(sizeof(Byte) * ramsize);
