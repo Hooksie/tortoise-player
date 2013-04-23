@@ -127,5 +127,7 @@ static Byte gb_read_swram(Address addr);
 #define IO_ADDR_SVBK			0xFF70
 #define IO_ADDR_IE				0xFFFF
 
+#define ZELDA_RAMSIZE			0x2000
+
 #endif /* GBMEM_H_ */
 

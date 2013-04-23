@@ -67,7 +67,7 @@ static inline void call(Word a);
 static inline void rst(Byte a);
 static inline void ret();
 
-CpuState cpu_int;
+CpuState cpu;
 
 void gb_cpu_execute_cycles(int max_cycles) {
 	
@@ -78,7 +78,7 @@ void gb_cpu_execute_cycles(int max_cycles) {
 		
 		interupt_check();
 		
-		if(cpu_int.halted) {
+		if(cpu.halted) {
 			
 			// TODO: Um...?
 			
@@ -101,11 +101,25 @@ void gb_cpu_execute_cycles(int max_cycles) {
 
 void gb_cpu_init() {
 	
-	REG_AF = 0x11B0;
-	REG_BC = 0x0013;
-	REG_DE = 0x00D8;
-	REG_HL = 0x014D;
+	FLAG_Z = 1;
+	FLAG_N = 0;
+	FLAG_Z = 1;
+	FLAG_C = 1;
 	
+	cpu.halted;
+
+	// As defined in spec
+//	REG_AF = 0x11B0;
+//	REG_BC = 0x0013;
+//	REG_DE = 0x00D8;
+//	REG_HL = 0x014D;
+	
+	// For matching bgb
+	REG_AF = 0x1180;
+	REG_BC = 0x0000;
+	REG_DE = 0xFF56;
+	REG_HL = 0x014D;
+
 	REG_SP = 0xFFFE;
 	REG_PC = 0x0100;
 	
@@ -1355,7 +1369,7 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0x76:   // HALT
-			cpu_int.halted = 1;
+			cpu.halted = 1;
 			*cycles = 4;
 			break;
 		case 0x10:   // STOP
@@ -1377,11 +1391,11 @@ static void call_opcode(int *cycles) {
 			*cycles = 4;
 			break;
 		case 0xF3:	// DI
-			cpu_int.ime = 0;
+			cpu.ime = 0;
 			*cycles = 4;
 			break;
 		case 0xFB:	// EI
-			cpu_int.ei = 3;
+			cpu.ei = 3;
 			//ime_ = 1;
 			*cycles = 4;
 			break;
@@ -1604,7 +1618,7 @@ static void call_opcode(int *cycles) {
 			break;
 		case 0xD9:	// RETI
 			ret();
-			cpu_int.ime = 1;
+			cpu.ime = 1;
 			*cycles = 16;
 			break;
 		case 0x00:  // NOP

@@ -11,7 +11,6 @@
 
 uint16_t selected_rom_bank, selected_ram_bank;
 extern Byte *upper_addrs = NULL;
-extern Byte *io_addrs = NULL;
 extern Byte *ram_addrs = NULL;
 
 void gb_mem_init(void) {
@@ -21,23 +20,19 @@ void gb_mem_init(void) {
 	selected_rom_bank = 1;
 	selected_ram_bank = 0;
 	
-	if(upper_addrs) {
+	if(!upper_addrs) {
 		upper_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_UPPER);
-		printf("upper size is %x", SIZE_MEM_UPPER);
+		printf("upper size is %i bytes\n", SIZE_MEM_UPPER);
 	}
 	
-	if(io_addrs) {
-		io_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_IO);
-	}
-	
-	if(!io_addrs) {
+	if(!ram_addrs) {
 		ram_addrs = (Byte*) malloc(sizeof(Byte) * ramsize);
-		printf("ramsize is %i bytes", ramsize);
+		printf("ramsize is %i bytes\n", ramsize);
 	}
 	
 	
-	//memset(upper_addrs, 0, SIZE_MEM_UPPER);
-	//memset(ram_addrs, 0, sizeof(Byte) * sizeof(ram_addrs0);
+	memset(upper_addrs, 0, sizeof(Byte) * SIZE_MEM_UPPER);
+	memset(ram_addrs, 0, sizeof(Byte) * ramsize);
 	
 	gb_mem_write(IO_ADDR_TIMA, 0x00);
 	gb_mem_write(IO_ADDR_TMA, 0x00);
