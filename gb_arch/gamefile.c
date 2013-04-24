@@ -18,9 +18,9 @@ void gb_game_load(char path[]) {
 	
 	game_ptr = fopen(path, "r");
 	if(game_ptr == NULL)
-		printf("Failed to open game.");
+		printf("Failed to open game.\n");
 	else
-		printf(".......Done!");
+		printf(".......Done!\n");
 	
 }
 

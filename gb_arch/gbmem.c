@@ -73,7 +73,7 @@ void gb_mem_init(void) {
 Byte gb_mem_read(Address addr) {
 	
 	Byte value = 0x00;
-	printf("Reading from %x...\n", addr);
+	//printf("Reading from %x...\n", addr);
 	
 	if(addr < TOP_CART) {
 		value = gb_read_rom(addr);
@@ -97,7 +97,7 @@ Byte gb_mem_read(Address addr) {
 
 void gb_mem_write(Address addr, Byte value) {
 	
-	printf("Writing %x to %x", value, addr);
+	//printf("Writing %x to %x\n", value, addr);
 	
 	if(addr < TOP_CART) {
 		gb_write_rom(addr, value);
