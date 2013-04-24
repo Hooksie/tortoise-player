@@ -22,14 +22,13 @@ void gb_mem_init(void) {
 	
 	if(!upper_addrs) {
 		upper_addrs = (Byte*) malloc(sizeof(Byte) * SIZE_MEM_UPPER);
-		printf("upper size is %i bytes\n", SIZE_MEM_UPPER);
+		printf("Upper size is %i bytes. ", SIZE_MEM_UPPER);
 	}
 	
 	if(!ram_addrs) {
 		ram_addrs = (Byte*) malloc(sizeof(Byte) * ramsize);
-		printf("ramsize is %i bytes\n", ramsize);
+		printf("RAM size is %i bytes\n", ramsize);
 	}
-	
 	
 	memset(upper_addrs, 0, sizeof(Byte) * SIZE_MEM_UPPER);
 	memset(ram_addrs, 0, sizeof(Byte) * ramsize);
@@ -98,6 +97,7 @@ Byte gb_mem_read(Address addr) {
 void gb_mem_write(Address addr, Byte value) {
 	
 	//printf("Writing %x to %x\n", value, addr);
+	printf("RAM! ");
 	
 	if(addr < TOP_CART) {
 		gb_write_rom(addr, value);
@@ -157,13 +157,13 @@ void gb_write_rom(Address addr, Byte value) {
 		// SCREW YOURSELF
 	} else if(addr < INROM_ROM_SELLOW) {
 		selected_rom_bank = (selected_rom_bank & (~0xFF)) | value;
-		printf("ROMBANK set to %i", selected_rom_bank);
+		printf("ROMBANK set to %i\n", selected_rom_bank);
 		//if(selected_rom_bank == 0)
 			//selected_rom_bank = 1;
 		
 	} else if(addr < INROM_ROM_SELHI) {
 		selected_rom_bank = (selected_rom_bank && 0xFF) | ((value & 0x01) << 8);
-		printf("RAMBANK set to %i", selected_ram_bank);
+		printf("RAMBANK set to %i\n", selected_ram_bank);
 		//if(selected_rom_bank == 0)
 			//selected_rom_bank = 1;
 		
@@ -171,7 +171,7 @@ void gb_write_rom(Address addr, Byte value) {
 		selected_ram_bank = value & 0x0F;
 		
 	} else {
-		printf("RomWrite: Well shit, that's not a valid ROM cart address.");
+		printf("RomWrite: Well shit, that's not a valid ROM cart address.\n");
 		
 	}
 	

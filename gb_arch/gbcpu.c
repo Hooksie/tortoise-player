@@ -129,13 +129,13 @@ void gb_cpu_init() {
 	REG_SP = 0xFFFE;
 	REG_PC = 0x0100;
 	
-	printf("CPI initialized...\n");
+	printf("CPU initialized...\n");
 	
 }
 
 void printstatusregister() {
 	
-	printf("Z = %i, N = %i, H = %i, C = %i", FLAG_Z, FLAG_N, FLAG_H, FLAG_C);
+	printf("Z = %i, N = %i, H = %i, C = %i\n", FLAG_Z, FLAG_N, FLAG_H, FLAG_C);
 	
 }
 

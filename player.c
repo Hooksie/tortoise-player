@@ -14,13 +14,9 @@ extern int_32 Player_Start(int_32 argc, char_ptr argv[] ) {
 	gb_game_init();
 	gb_mem_init();
 	
-	printf("Check this shit -> %x\n", gb_mem_read(0x00));
-	printf("Check this shit -> %x\n", gb_mem_read(0x01));
-	printf("Check this shit -> %x\n", gb_mem_read(0x02));
-	printf("Check this shit -> %x\n", gb_mem_read(0x03));
-	printf("Check this shit -> %x\n", gb_mem_read(0x04));
-	printf("Check this shit -> %x\n", gb_mem_read(0x05));
-	printf("Check this shit -> %x\n", gb_mem_read(0x06));
+	printf("Game file begins -> %x %x %x %x %x %x %x \n", 
+			gb_mem_read(0x00), gb_mem_read(0x01), gb_mem_read(0x02), gb_mem_read(0x03),
+			gb_mem_read(0x04), gb_mem_read(0x05), gb_mem_read(0x06));
 	
 	//gb_cpu_execute_cycles(40);
 	
@@ -30,7 +26,7 @@ extern int_32 Player_Start(int_32 argc, char_ptr argv[] ) {
 //		_time_delay(1000);
 		//printf("wait for it...\n");
 		getchar();
-		printf("Cycles executed... fuck\n");
+		printf("Cycle executed...\n");
 	}
 	
 	return 0;
