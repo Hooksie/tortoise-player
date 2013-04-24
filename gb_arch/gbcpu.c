@@ -86,12 +86,7 @@ void gb_cpu_execute_cycles(int max_cycles) {
 			
 		}
 		
-		printf("@REG_PC: %x\n", REG_PC);
-		printf("@REG_SP: %x\n", REG_SP);
-		printf("@REG_AF: %x\n", REG_AF);
-		printf("@REG_BC: %x\n", REG_BC);
-		printf("@REG_DE: %x\n", REG_DE);
-		printf("@REG_HL: %x\n", REG_HL);
+		printmainregisters();
 		
 		call_opcode(&cycles);
 		
@@ -103,16 +98,21 @@ void gb_cpu_execute_cycles(int max_cycles) {
 
 void gb_cpu_init() {
 	
+	printf("Setting console type to Game Boy Color...\n");
 	console = CONSOLE_GBC;
 	console_mode = MODE_GBC_ENABLED;
 	
+	printf("Setting status register initial values...\n");
 	FLAG_Z = 1;
 	FLAG_N = 0;
-	FLAG_Z = 1;
+	FLAG_H = 1;
 	FLAG_C = 1;
+	printstatusregister();
 	
 	cpu_int.halted = 0;
 	cpu_int.stopped = 0;
+	printf("Cpu is %s.\n", cpu_int.halted ? "halted" : "not halted");
+	printf("Cpu is %s.\n", cpu_int.halted ? "stopped" : "not stopped");
 
 	// As defined in spec
 //	REG_AF = 0x11B0;
@@ -130,6 +130,23 @@ void gb_cpu_init() {
 	REG_PC = 0x0100;
 	
 	printf("CPI initialized...\n");
+	
+}
+
+void printstatusregister() {
+	
+	printf("Z = %i, N = %i, H = %i, C = %i", FLAG_Z, FLAG_N, FLAG_H, FLAG_C);
+	
+}
+
+void printmainregisters() {
+	
+	printf("@REG_PC: %x\n", REG_PC);
+	printf("@REG_SP: %x\n", REG_SP);
+	printf("@REG_AF: %x\n", REG_AF);
+	printf("@REG_BC: %x\n", REG_BC);
+	printf("@REG_DE: %x\n", REG_DE);
+	printf("@REG_HL: %x\n", REG_HL);
 	
 }
 

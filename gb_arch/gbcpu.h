@@ -14,6 +14,8 @@
 void gb_cpu_execute_cycles(int max_cycles);
 void gb_cpu_init(void);
 
+void printstatusregister(void);
+void printmainregisters(void);
 static void interupt_check(void);
 static void call_opcode(int *cycles_ptr);
 

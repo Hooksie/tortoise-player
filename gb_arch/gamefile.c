@@ -14,9 +14,13 @@ int rom_size, ram_size, rom_banks, ram_banks;
 
 void gb_game_load(char path[]) {
 	
+	printf("Loading up gamefile...");
+	
 	game_ptr = fopen(path, "r");
 	if(game_ptr == NULL)
 		printf("Failed to open game.");
+	else
+		printf(".......Done!");
 	
 }
 
