@@ -154,11 +154,13 @@ void gb_write_rom(Address addr, Byte value) {
 		// SCREW YOURSELF
 	} else if(addr < INROM_ROM_SELLOW) {
 		selected_rom_bank = (selected_rom_bank & (~0xFF)) | value;
+		printf("ROMBANK set to %i", selected_rom_bank);
 		//if(selected_rom_bank == 0)
 			//selected_rom_bank = 1;
 		
 	} else if(addr < INROM_ROM_SELHI) {
 		selected_rom_bank = (selected_rom_bank && 0xFF) | ((value & 0x01) << 8);
+		printf("RAMBANK set to %i", selected_ram_bank);
 		//if(selected_rom_bank == 0)
 			//selected_rom_bank = 1;
 		
@@ -174,13 +176,13 @@ void gb_write_rom(Address addr, Byte value) {
 
 Byte gb_read_rom(Address addr) {
 
-	return gb_game_addr(addr);;
+	return gb_game_addr(addr);
 	
 }
 
 Byte gb_read_swrom(Address addr) {
 	
-	return gm_game_addr(addr + (SIZE_ROM * selected_rom_bank));;
+	return gm_game_addr(addr + (SIZE_ROM * selected_rom_bank));
 	
 }
 

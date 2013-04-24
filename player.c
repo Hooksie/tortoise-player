@@ -14,10 +14,6 @@ extern int_32 Player_Start(int_32 argc, char_ptr argv[] ) {
 	gb_game_init();
 	gb_mem_init();
 	
-//	printf("Check this shit -> %x\n", gb_game_addr(0x00));
-//	printf("Check this shit -> %x\n", gb_game_addr(0x02));
-//	printf("Check this shit -> %x\n", gb_game_addr(0x01));
-	
 	printf("Check this shit -> %x\n", gb_mem_read(0x00));
 	printf("Check this shit -> %x\n", gb_mem_read(0x01));
 	printf("Check this shit -> %x\n", gb_mem_read(0x02));
